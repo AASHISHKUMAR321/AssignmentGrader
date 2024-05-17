@@ -312,7 +312,7 @@ async function fetchDataFromGitHub(owner, repo, path, token) {
 //   const owner = "masai-course"; // Owner of the repository
 //   // const repo = "sagar_fw11_034"; // Name of the repository
 //   // const path = "Assignment_01_WEB-Grid-Responsive-Layout"; // Path to the directory in the repository
-//   const token = "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";
+//   const token = "";
 //   // Replace with your GitHub personal access token
 //   fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile).then(
 //     (d) =>{

@@ -98,8 +98,6 @@
 //   }
 // }
 
-
-
 // let repository;
 // let subdirectory;
 // process.stdin.setEncoding("utf8");
@@ -133,25 +131,21 @@
 //   const owner = "masai-course"; // Owner of the repository
 //   // const repo = "sagar_fw11_034"; // Name of the repository
 //   // const path = "Assignment_01_WEB-Grid-Responsive-Layout"; // Path to the directory in the repository
-//   const token = "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";
+//   const token = "";
 //   // Replace with your GitHub personal access token
 //   fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile).then(
 //     (d) =>{
 //       console.log('data is added successfully to output folder')
-    
+
 //     }
-   
+
 //   );
 // });
-
-
-
-
-
 
 const axios = require("axios");
 const path = require("path");
 const fs = require("fs").promises; // Using fs.promises for asynchronous file operations
+require("dotenv").config();
 
 // Function to check if a file is binary based on its extension
 function isBinaryFile(filename) {
@@ -180,13 +174,19 @@ function isBinaryFile(filename) {
 }
 
 // Function to fetch data from GitHub repository recursively
-async function fetchDataFromGitHub(owner, repo, currentPath, token, outputFilePath) {
+async function fetchDataFromGitHub(
+  owner,
+  repo,
+  currentPath,
+  token,
+  outputFilePath
+) {
   try {
     // Initialize output content
-    let outputContent = '';
+    let outputContent = "";
 
     // Recursive function to traverse directory
-    async function traverseDirectory(currentPath, token, indent = '') {
+    async function traverseDirectory(currentPath, token, indent = "") {
       const githubUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${currentPath}`;
 
       const response = await axios.get(githubUrl, {
@@ -196,9 +196,12 @@ async function fetchDataFromGitHub(owner, repo, currentPath, token, outputFilePa
       });
 
       for (const item of response.data) {
-        if (item.type === 'dir') {
+        if (item.type === "dir") {
           // Add folder to output content
-          outputContent += `${indent}Folder: ${path.relative(currentPath, item.path)}\n`;
+          outputContent += `${indent}Folder: ${path.relative(
+            currentPath,
+            item.path
+          )}\n`;
           // Recursively traverse subdirectory
           await traverseDirectory(item.path, token, `${indent}  `);
         } else {
@@ -211,7 +214,10 @@ async function fetchDataFromGitHub(owner, repo, currentPath, token, outputFilePa
             responseType: "text", // Ensure response is treated as text
           });
           // Add file content to output content
-          outputContent += `${indent}File: ${path.relative(currentPath, item.path)}\n`;
+          outputContent += `${indent}File: ${path.relative(
+            currentPath,
+            item.path
+          )}\n`;
           outputContent += `${fileContentResponse.data}\n\n`;
         }
       }
@@ -259,6 +265,6 @@ process.stdin.on("data", function (data) {
 
   // Call the function to fetch data from GitHub repository
   const owner = "masai-course"; // Owner of the repository
-  const token = "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"; // Replace with your GitHub personal access token
+  const token = process.env.TOKEN; // Replace with your GitHub personal access token
   fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile);
 });
