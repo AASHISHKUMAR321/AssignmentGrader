@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type":"module",
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.15",
     "axios": "^1.6.8",

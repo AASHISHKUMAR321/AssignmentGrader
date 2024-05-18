@@ -1,7 +1,8 @@
-const axios = require("axios");
-const path = require("path");
-const fs = require("fs").promises; // Using fs.promises for asynchronous file operations
-require("dotenv").config();
+import axios from "axios";
+import path from "path";
+import fs from "fs/promises"; // Using fs.promises for asynchronous file operations
+import { config } from "dotenv";
+config();
 
 // Function to check if a file is binary based on its extension
 function isBinaryFile(filename) {
@@ -86,6 +87,7 @@ async function fetchDataFromGitHub(
     await fs.writeFile(outputFilePath, outputContent);
     console.log(`Output file created: ${outputFilePath}`);
   } catch (error) {
+    console.log(error);
     console.error("Error fetching data:", error.message);
   }
 }
@@ -120,5 +122,10 @@ process.stdin.on("data", function (data) {
   // Call the function to fetch data from GitHub repository
   const owner = "masai-course"; // Owner of the repository
   const token = process.env.TOKEN; // Replace with your GitHub personal access token
-  fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile);
+  fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile).then(
+    () => {
+      console.log("Data is added successfully to output folder");
+      process.stdin.pause(); // End the process.stdin stream
+    }
+  );
 });

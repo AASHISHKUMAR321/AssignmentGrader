@@ -1,6 +1,7 @@
-const openai = require("openai");
-require("dotenv").config();
-const fs = require("fs").promises;
+import openai from "openai";
+import {config} from 'dotenv'
+config()
+import fs from 'fs/promises'
 // Initialize OpenAI API client with your API key
 const client = new openai.OpenAI({ apiKey: process.env.API_KEY });
 
