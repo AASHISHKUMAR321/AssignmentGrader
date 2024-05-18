@@ -18,7 +18,7 @@ async function gradeCompiledData(compiledData) {
   try {
     // Call the OpenAI API to complete the prompt
     const completion = await client.chat.completions.create({
-      model: "gpt-4-0125-preview", // Choose the appropriate engine
+      model: "gpt-4o", // Choose the appropriate engine
       messages: [
         { role: "system", content: gradingPrompt },
         { role: "user", content: compiledData },
