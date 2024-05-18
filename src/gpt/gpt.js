@@ -11,6 +11,7 @@ Given the compiled data from the GitHub repository, please provide a grading for
 2. Assess the code quality and readability.
 3. Check for proper error handling.
 4. Any additional comments or suggestions for improvement.
+i need response in json format
 `;
 
 // Function to grade the compiled data using ChatGPT-4
@@ -24,12 +25,13 @@ async function gradeCompiledData(compiledData) {
         { role: "user", content: compiledData },
       ],
      // Stop the completion at double newline
-      response_format: { type: "text" },
+
+      response_format: { type: "json_object" },
     });
     // console.log(completion.choices[0].message.content)
     // Process the response
     const gradedAssignment = completion.choices[0].message.content
-    console.log("Graded Assignment:", gradedAssignment);
+    console.log("Graded Assignment:", JSON.parse(gradedAssignment));
     // You can further process the graded assignment here
   } catch (error) {
     console.error("Error grading assignment:", error);
