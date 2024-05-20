@@ -2,18 +2,11 @@ import openai from "openai";
 import {config} from 'dotenv'
 config()
 import fs from 'fs/promises'
+import gradingPrompt from "./prompts/gradingPrompt.js";
+
 // Initialize OpenAI API client with your API key
 const client = new openai.OpenAI({ apiKey: process.env.API_KEY });
 
-// Define the grading prompt
-const gradingPrompt = `
-Given the compiled data from the GitHub repository, please provide a grading for the assignments based on the following criteria:
-1. Evaluate the folder structure and organization.
-2. Assess the code quality and readability.
-3. Check for proper error handling.
-4. Any additional comments or suggestions for improvement.
-i need response in json format
-`;
 
 // Function to grade the compiled data using ChatGPT-4
 async function gradeCompiledData(compiledData) {
@@ -32,7 +25,7 @@ async function gradeCompiledData(compiledData) {
     // console.log(completion.choices[0].message.content)
     // Process the response
     const gradedAssignment = completion.choices[0].message.content
-    console.log("Graded Assignment:", JSON.parse(gradedAssignment));
+    console.log("Graded Assignment:",JSON.parse(gradedAssignment));
     // You can further process the graded assignment here
   } catch (error) {
     console.error("Error grading assignment:", error);

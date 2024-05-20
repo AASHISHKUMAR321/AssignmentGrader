@@ -62,7 +62,7 @@ async function fetchDataFromGitHub(
           // Recursively traverse subdirectory
           await traverseDirectory(item.path, token, `${indent}  `);
         } else {
-          if (isBinaryFile(item.name)) {
+          if (isBinaryFile(item.name) || item.name=="package-lock.json") {
             console.log(`Skipping binary file: ${item.name}`);
             continue;
           }
