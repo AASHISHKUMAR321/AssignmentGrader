@@ -1,12 +1,11 @@
 import openai from "openai";
-import {config} from 'dotenv'
-config()
-import fs from 'fs/promises'
+import { config } from "dotenv";
+config();
+import fs from "fs/promises";
 import gradingPrompt from "./prompts/gradingPrompt.js";
 
 // Initialize OpenAI API client with your API key
 const client = new openai.OpenAI({ apiKey: process.env.API_KEY });
-
 
 // Function to grade the compiled data using ChatGPT-4
 async function gradeCompiledData(compiledData) {
@@ -18,14 +17,15 @@ async function gradeCompiledData(compiledData) {
         { role: "system", content: gradingPrompt },
         { role: "user", content: compiledData },
       ],
-     // Stop the completion at double newline
+      temperature: 0,
+      // Stop the completion at double newline
 
       response_format: { type: "json_object" },
     });
     // console.log(completion.choices[0].message.content)
     // Process the response
-    const gradedAssignment = completion.choices[0].message.content
-    console.log("Graded Assignment:",JSON.parse(gradedAssignment));
+    const gradedAssignment = completion.choices[0].message.content;
+    console.log("Graded Assignment:", JSON.parse(gradedAssignment));
     // You can further process the graded assignment here
   } catch (error) {
     console.error("Error grading assignment:", error);
@@ -45,7 +45,6 @@ async function readFromFile(filePath) {
 const filePath = "compiled_data.txt"; // Path to your compiled data file
 readFromFile(filePath).then((compiledData) => {
   if (compiledData) {
-   
     gradeCompiledData(compiledData);
   } else {
     console.log("Failed to read compiled data from file.");

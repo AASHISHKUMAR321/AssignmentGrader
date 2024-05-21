@@ -1,212 +1,313 @@
-File: .gitignore
-.node_modules
-.package-lock.json
-
-Folder: Crashed
-  File: e3652f97aad571b5.txt
-Sample file content
-
-Folder: In-progress
-  File: 0fd15b0d908d36b5.txt
-Sample file content
-
-  File: 1332dc8c23cfc3f6.txt
-Sample file content
-
-  File: 52a1588a070112d6.txt
-Sample file content
-
-  File: a8b34c59c2239dc8.txt
-Sample file content
-
-  File: fec89f27179fa21f.txt
-Sample file content
-
-Folder: Processing
-  File: $filename
-
-
-File: index.html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script
-      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
-      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
-      crossorigin="anonymous"
-    ></script>
-    <title>Document</title>
-  </head>
-  <body>
-    <div id="chartContainer" style="height: 300px; width: 80%"></div>
-    <script>
-      const socket = io("http://localhost:3000", { transports: [webSocket] });
-      //   socket.emit("send", msg);
-      //       socket.on("message",(msg) =>{
-      //           console.log(msg);
-      //       })
-
-      // const socket = io();
-
-      const chart = new CanvasJS.chart("chartContainer", {
-        theme: "light2",
-        title: {
-          text: "Real time data visualise",
-        },
-        data: [
-          {
-            type: "spline",
-            dataPoints: [],
-          },
-        ],
-      });
-      socket.on("data", (data) => {
-        data = JSON.parse(data);
-        chart.options.data[0].dataPoints.push({ y: data.value });
-        chart.render();
-      });
-    </script>
-  </body>
-</html>
-
-
-File: index.js
-const fs = require("fs");
-const crypto = require("crypto");
-const { Server } = require("socket.io");
-const express = require("express");
-
-const app = express();
-const server = require("http").createServer(app);
-const io = new Server(server);
-
-const FOLDER_STRUCTURE = ["Processing", "In-progress", "Completed", "Crashed"];
-const FILE_INTERVAL = 3000; // 3 seconds
-const PROCESSING_DELAY_THRESHOLD = 3000; // 3 seconds
-const PROCESSING_FAILURE_THRESHOLD = 5000; // 5 seconds
-
-// Create folders if not exist
-FOLDER_STRUCTURE.forEach((folder) => {
-  if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder);
-  }
-});
-
-function moveFile(file, from, to, message) {
-  fs.rename(`./${from}/${file}`, `./${to}/${file}`, (err) => {
-    if (err) throw err;
-    console.log(`${file} moved from ${from} to ${to}: ${message}`);
-  });
-}
-
-function processFile(file) {
-  const processingTime = Math.floor(Math.random() * (6000 - 1000 + 1)) + 1000; // Random time between 1 to 6 seconds
-  setTimeout(() => {
-    if (Math.random() < 0.8) {
-      // 80% success rate
-      moveFile(file, "In-progress", "Completed", "Processing completed");
-    } else {
-      moveFile(file, "In-progress", "Crashed", "Processing failed");
-      fs.writeFile(
-        `./Crashed/${file}.log`,
-        Error`processing ${file}`,
-        (err) => {
-          if (err) throw err;
-          console.log(Error`log created for ${file}`);
-        }
-      );
-    }
-    io.emit("fileProcessed", { fileName: file, processingTime });
-  }, processingTime);
-}
-
-setInterval(() => {
-  const filename = `${crypto.randomBytes(8).toString("hex")}.txt`;
-  fs.writeFile("./processing/$filename", "Sample file content", (err) => {
-    if (err) throw err;
-    console.log(`${filename} generated in folder`);
-    moveFile(filename, "Processing", "in-progress", "moved to inprogress");
-  });
-}, FILE_INTERVAL);
-
-// Logging warnings for processing delays
-setInterval(() => {
-  fs.readdir("./In-progress", (err, files) => {
-    if (err) throw err;
-    files.forEach((file) => {
-      fs.stat(`./In-progress/${file}`, (err, stats) => {
-        if (err) throw err;
-        const currentTime = new Date().getTime();
-        const fileModifiedTime = new Date(stats.mtime).getTime();
-        const processingTime = currentTime - fileModifiedTime;
-        if (processingTime > PROCESSING_DELAY_THRESHOLD) {
-          console.log(
-            `Warning: ${file} is taking longer than expected (${processingTime}ms)`
-          );
-        }
-      });
-    });
-  });
-}, PROCESSING_DELAY_THRESHOLD);
-
-
-io.on("connection", (socket) => {
-  console.log("A user connected");
-});
-
-server.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-
-// setInterval(() => {
-//     const fileName = `${crypto.randomBytes(8).toString('hex')}.txt`; // Generate random file name
-//     fs.writeFile(`./Processing/${fileName}`, 'Sample file content', (err) => {
-//         if (err) throw err;
-//         console.log(`${fileName} generated in Processing folder`);
-//         moveFile(fileName, 'Processing', 'In-progress', 'Moved to In-progress');
-//     });
-// }, FILE_INTERVAL);
-
-// // Monitoring and processing files
-// fs.watch('./In-progress', (eventType, filename) => {
-//     if (eventType === 'rename' && filename) {
-//         console.log(`${filename} detected in In-progress folder`);
-//         setTimeout(() => {
-//             if (fs.existsSync(`./In-progress/${filename}`)) {
-//                 moveFile(filename, 'In-progress', 'Crashed', 'Processing timed out');
-//                 fs.writeFile(`./Crashed/${filename}.log, Processing timed out for ${filename}`, (err) => {
-//                     if (err) throw err;
-//                     console.log(`Timeout log created for ${filename}`);
-//                 });
-//             }
-//         }, PROCESSING_FAILURE_THRESHOLD);
-//     }
-// });
-
-
-File: package.json
+File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/.eslintrc.json
 {
-  "name": "evaluation",
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": "airbnb-base",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+    }
+}
+
+
+Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/config
+  File: db.js
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const connection = mongoose.connect(process.env.mongoURL);
+
+module.exports = {
+    connection
+}
+
+File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/index.js
+const express = require('express');
+const app = express();
+require('dotenv').config();
+const {connection} = require('./config/db');
+const { userRouter } = require('./routes/user.routes');
+const { expenseRouter } = require('./routes/expense.routes');
+const port = process.env.port;
+
+app.use(express.json);
+app.use('/users', userRouter);
+app.use('/expense', expenseRouter)
+
+app.get('/products',(req, res)=>{
+    res.json({msg: 'Products page'})
+})
+
+app.listen(port, async()=>{
+    try {
+        await connection
+        console.log('connected to database');
+        console.log(`server is running at port ${port}`)
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/middleware
+  File: auth.middleware.js
+const jwt = require('jsonwebtoken');
+const { userModal } = require('../modal/user.modal');
+
+
+const auth = (req,res,next) =>{
+    const authToken = req.headers.authorization?.split(" ")[1];
+    try {
+        if(authToken){
+            jwt.verify(authToken, "masai", async(err,decoded)=>{
+                if(err){
+                    res.status(401).json({msg:err});
+                }else{
+                    req.user = {userId: decoded.userID};
+                    req.body.role = decoded.userRole;
+                    next();
+                }
+            })
+        }else{
+            res.status(200).json({msg:'Please login'});
+        }
+    } catch (error) {
+        res.status(400).json({error})
+    }
+}
+
+module.exports = {
+    auth
+}
+
+Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/modal
+  File: expense.modal.js
+const mongoose = require('mongoose');
+
+const expenseSchema = mongoose.Schema({
+    title : {type:String, required:true},
+    description : String, amount: {type:Number, required:true},
+    date : {type:Date, default:Date.mow},
+    status : {type:String, 
+        enum:['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
+    attachments:[String],
+    user : {type: mongoose.Schema.Types.ObjectId, ref:'User', require:true}
+},{
+    versionKey : false
+})
+
+const expenseModal = mongoose.model('expense', expenseSchema);
+
+module.exports = {
+    expenseModal
+}
+
+  File: user.modal.js
+const mongoose = require('mongoose');
+
+const userSchema = mongoose.Schema({
+    username : {type:String, required:true},
+    email : {type:String, required:true},
+    pass : {type:String, required:true},
+    role : {type:String, 
+        enum:['Employee', 'Manager', 'Finance'],
+        default: 'Employees'
+    },
+    manager : {type: mongoose.Schema.Types.ObjectId, ref:'User'}
+},{
+    versionKey : false
+})
+
+const userModal = mongoose.model('user', userSchema);
+
+module.exports = {
+    userModal
+}
+
+File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/package.json
+{
+  "name": "expense-claim-management-system",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon index.js"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "nodemon": "^3.1.0",
-  
-    "socket.io": "^4.7.5",
-    "winston": "^3.13.0",
-    "ws": "^8.17.0"
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.2.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.0"
   }
 }
 
+
+Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/routes
+  File: expense.routes.js
+const express = require('express');
+const multer = require('multer');
+const { auth } = require('../middleware/auth.middleware');
+const { expenseModal } = require('../modal/expense.modal');
+const { userModal } = require('../modal/user.modal');
+const expenseRouter = express.Router();
+
+const upload = multer({ dest: 'uploads/' })
+expenseRouter.post('/', auth, upload.single('receipt'), async(req,res)=>{
+    try {
+        const {title, description, amount} = req.body;
+        const userID = req.user.userID;
+        const receipt = req.file;
+        const newExpense = new expenseModal({
+            title,
+            description,
+            amount,
+            userID,
+            receipt: receipt?receipt.path:null
+        })
+        await newExpense.save();
+        res.status(201).json(newExpense);
+    } catch (error) {
+        res.status(400).json({msg:error})
+    }
+})
+
+expenseRouter.get('/', auth, async(req,res)=>{
+    try {
+        const expense = await expenseModal.find();
+        res.json(expense);
+    } catch (error) {
+        res.status(400).json({msg:error})
+    }
+})
+
+expenseRouter.patch('/:id', auth, async(req,res)=>{
+    try {
+        const payload = req.body;
+        const update = await expenseModal.findByIdAndUpdate(req.params.id, payload)
+        res.json(update);
+    } catch (error) {
+        res.status(400).json({msg:error})
+    }
+})
+
+expenseRouter.delete('/:id', auth, async(req,res)=>{
+    try {
+        await expenseModal.findByIdAndDelete(req.params.id)
+        res.json({msg: `${id} has been deleted`});
+    } catch (error) {
+        res.status(400).json({msg:error})
+    }
+})
+
+module.exports = {
+    expenseRouter
+}
+
+
+
+
+  File: user.routes.js
+const express = require('express');
+const userModal = require('../modal/user.modal');
+const bcrypt = require('bcrypt');
+const userRouter = express.Router();
+const jwt = require('jsonwebtoken');
+const { auth } = require('../middleware/auth.middleware');
+
+userRouter.post('/register', async(req,res)=>{
+    const {username, email, pass, role, manager} = req.body;
+    try {
+        bcrypt.hash(pass, 5, async(err, hash) => {
+            if(err){
+                res.status(200).json({err});
+            }else{
+                const user = new userModal ({
+                    username,
+                    email,
+                    pass:hash,
+                    role,
+                    manager
+                });
+                await user.save();
+                res.status(200).json({msg: 'New User has been registered'});
+            }
+        });
+    } catch (error) {
+        res.status(400).json({error});
+    }
+})
+
+userRouter.post('/login', async(req,res)=>{
+    const {email, pass} = req.body
+    try {
+        const user = await userModal.findOne({email})
+        if(user){
+            bcrypt.compare(pass, user.pass, (err, result) => {
+                if(result){
+                    const accessToken = jwt.sign({userID: user._id, userRole: user.role}, 'masai')
+                    res.status(200).json({msg:'Login Sucessfull', accessToken});
+                }else{
+                    res.status(200).json({msg:'Wrong password'});
+                }
+            });
+        }else{
+            res.status(200).json({msg:'Wrong Credential!'})
+        }
+    } catch (error) {
+        res.status(400).json({error})
+    }
+})
+
+userRouter.get('/', auth, async(req,res)=>{
+    try {
+        if(req.body.role !== 'Manager'){
+            res.status(403).json({msg:'Unauthorized'})
+        }
+        const users = await userModal.find();
+        res.json(users);
+    } catch (error) {
+        res.status(400).json({error})
+    }
+})
+userRouter.put('/:userId', auth, async(req, res)=>{
+    try {
+        if(req.user.role !== 'Manager'){
+            res.status(403).json({msg:'Unauthorized'})
+        }
+        const {username, email, pass, role, manager} = req.body;
+        const updatedUser = await userModal.findByIdAndUpdate(req.params.userId, {username, email, pass, role, manager})
+        res.json(updatedUser)
+    } catch (error) {
+        res.status(400).json({error})
+    }
+})
+
+userRouter.delete('/:userId', auth, async(req,res)=>{
+    try {
+        if(req.user.role !== 'Manager'){
+            res.status(403).json({msg:'Unauthorized'})
+        }
+        await userModal.findByIdAndDelete(req.params.userId);
+        res.json({msg: `${userID} has been deleted`}) 
+    } catch (error) {
+        res.status(400).json({error})
+    }
+})
+
+module.exports = {
+    userRouter
+}
 
