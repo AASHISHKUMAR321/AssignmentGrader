@@ -3,6 +3,7 @@ import { config } from "dotenv";
 config();
 import fs from "fs/promises";
 import gradingPrompt from "./prompts/gradingPrompt.js";
+import learningObjectives from "./prompts/Lo's.js";
 
 // Initialize OpenAI API client with your API key
 const client = new openai.OpenAI({ apiKey: process.env.API_KEY });
@@ -12,12 +13,20 @@ async function gradeCompiledData(compiledData) {
   try {
     // Call the OpenAI API to complete the prompt
     const completion = await client.chat.completions.create({
-      model: "gpt-4o", // Choose the appropriate engine
+      model: "gpt-4-turbo", // Choose the appropriate engine
       messages: [
         { role: "system", content: gradingPrompt },
-        { role: "user", content: compiledData },
+        {
+          role: "user",
+          content: `
+        Grade the following assignment based on these LO's: ${learningObjectives}
+        I am providing the student submission of files & folders  into single txt. so you have to find the solution for the particular LO from this submission  :${compiledData}
+      
+        `,
+        },
       ],
       temperature: 0,
+      top_p: 1,
       // Stop the completion at double newline
 
       response_format: { type: "json_object" },

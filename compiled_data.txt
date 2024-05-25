@@ -1,313 +1,333 @@
-File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/.eslintrc.json
-{
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "es2021": true,
-        "node": true
-    },
-    "extends": "airbnb-base",
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
-    "rules": {
-    }
-}
-
-
-Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/config
-  File: db.js
-const mongoose = require('mongoose');
-require('dotenv').config();
-
-const connection = mongoose.connect(process.env.mongoURL);
-
-module.exports = {
-    connection
-}
-
-File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/index.js
-const express = require('express');
-const app = express();
-require('dotenv').config();
-const {connection} = require('./config/db');
-const { userRouter } = require('./routes/user.routes');
-const { expenseRouter } = require('./routes/expense.routes');
-const port = process.env.port;
-
-app.use(express.json);
-app.use('/users', userRouter);
-app.use('/expense', expenseRouter)
-
-app.get('/products',(req, res)=>{
-    res.json({msg: 'Products page'})
-})
-
-app.listen(port, async()=>{
-    try {
-        await connection
-        console.log('connected to database');
-        console.log(`server is running at port ${port}`)
-    } catch (error) {
-        console.log(error)
-    }
-})
-
-Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/middleware
-  File: auth.middleware.js
-const jwt = require('jsonwebtoken');
-const { userModal } = require('../modal/user.modal');
-
-
-const auth = (req,res,next) =>{
-    const authToken = req.headers.authorization?.split(" ")[1];
-    try {
-        if(authToken){
-            jwt.verify(authToken, "masai", async(err,decoded)=>{
-                if(err){
-                    res.status(401).json({msg:err});
-                }else{
-                    req.user = {userId: decoded.userID};
-                    req.body.role = decoded.userRole;
-                    next();
-                }
-            })
-        }else{
-            res.status(200).json({msg:'Please login'});
-        }
-    } catch (error) {
-        res.status(400).json({error})
-    }
-}
-
-module.exports = {
-    auth
-}
-
-Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/modal
-  File: expense.modal.js
-const mongoose = require('mongoose');
-
-const expenseSchema = mongoose.Schema({
-    title : {type:String, required:true},
-    description : String, amount: {type:Number, required:true},
-    date : {type:Date, default:Date.mow},
-    status : {type:String, 
-        enum:['pending', 'approved', 'rejected'],
-        default: 'pending'
-    },
-    attachments:[String],
-    user : {type: mongoose.Schema.Types.ObjectId, ref:'User', require:true}
-},{
-    versionKey : false
-})
-
-const expenseModal = mongoose.model('expense', expenseSchema);
-
-module.exports = {
-    expenseModal
-}
-
-  File: user.modal.js
-const mongoose = require('mongoose');
-
-const userSchema = mongoose.Schema({
-    username : {type:String, required:true},
-    email : {type:String, required:true},
-    pass : {type:String, required:true},
-    role : {type:String, 
-        enum:['Employee', 'Manager', 'Finance'],
-        default: 'Employees'
-    },
-    manager : {type: mongoose.Schema.Types.ObjectId, ref:'User'}
-},{
-    versionKey : false
-})
-
-const userModal = mongoose.model('user', userSchema);
-
-module.exports = {
-    userModal
-}
-
-File: ../EXPENSE CLAIM MANAGEMENT SYSTEM/package.json
-{
-  "name": "expense-claim-management-system",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.18.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.2.2",
-    "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.1.0"
-  }
-}
-
-
-Folder: ../EXPENSE CLAIM MANAGEMENT SYSTEM/routes
-  File: expense.routes.js
-const express = require('express');
-const multer = require('multer');
-const { auth } = require('../middleware/auth.middleware');
-const { expenseModal } = require('../modal/expense.modal');
-const { userModal } = require('../modal/user.modal');
-const expenseRouter = express.Router();
-
-const upload = multer({ dest: 'uploads/' })
-expenseRouter.post('/', auth, upload.single('receipt'), async(req,res)=>{
-    try {
-        const {title, description, amount} = req.body;
-        const userID = req.user.userID;
-        const receipt = req.file;
-        const newExpense = new expenseModal({
-            title,
-            description,
-            amount,
-            userID,
-            receipt: receipt?receipt.path:null
-        })
-        await newExpense.save();
-        res.status(201).json(newExpense);
-    } catch (error) {
-        res.status(400).json({msg:error})
-    }
-})
-
-expenseRouter.get('/', auth, async(req,res)=>{
-    try {
-        const expense = await expenseModal.find();
-        res.json(expense);
-    } catch (error) {
-        res.status(400).json({msg:error})
-    }
-})
-
-expenseRouter.patch('/:id', auth, async(req,res)=>{
-    try {
-        const payload = req.body;
-        const update = await expenseModal.findByIdAndUpdate(req.params.id, payload)
-        res.json(update);
-    } catch (error) {
-        res.status(400).json({msg:error})
-    }
-})
-
-expenseRouter.delete('/:id', auth, async(req,res)=>{
-    try {
-        await expenseModal.findByIdAndDelete(req.params.id)
-        res.json({msg: `${id} has been deleted`});
-    } catch (error) {
-        res.status(400).json({msg:error})
-    }
-})
-
-module.exports = {
-    expenseRouter
-}
+File: .dummy
 
 
 
-
-  File: user.routes.js
-const express = require('express');
-const userModal = require('../modal/user.modal');
-const bcrypt = require('bcrypt');
-const userRouter = express.Router();
-const jwt = require('jsonwebtoken');
-const { auth } = require('../middleware/auth.middleware');
-
-userRouter.post('/register', async(req,res)=>{
-    const {username, email, pass, role, manager} = req.body;
-    try {
-        bcrypt.hash(pass, 5, async(err, hash) => {
-            if(err){
-                res.status(200).json({err});
-            }else{
-                const user = new userModal ({
-                    username,
-                    email,
-                    pass:hash,
-                    role,
-                    manager
-                });
-                await user.save();
-                res.status(200).json({msg: 'New User has been registered'});
-            }
-        });
-    } catch (error) {
-        res.status(400).json({error});
-    }
-})
-
-userRouter.post('/login', async(req,res)=>{
-    const {email, pass} = req.body
-    try {
-        const user = await userModal.findOne({email})
-        if(user){
-            bcrypt.compare(pass, user.pass, (err, result) => {
-                if(result){
-                    const accessToken = jwt.sign({userID: user._id, userRole: user.role}, 'masai')
-                    res.status(200).json({msg:'Login Sucessfull', accessToken});
-                }else{
-                    res.status(200).json({msg:'Wrong password'});
-                }
+File: problem1.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function calculateSum(numbers)
+        {
+            let totalSum = 0;
+            numbers.forEach(number =>{
+                totalSum +=number;
             });
-        }else{
-            res.status(200).json({msg:'Wrong Credential!'})
-        }
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
 
-userRouter.get('/', auth, async(req,res)=>{
-    try {
-        if(req.body.role !== 'Manager'){
-            res.status(403).json({msg:'Unauthorized'})
+            return totalSum;
         }
-        const users = await userModal.find();
-        res.json(users);
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
-userRouter.put('/:userId', auth, async(req, res)=>{
-    try {
-        if(req.user.role !== 'Manager'){
-            res.status(403).json({msg:'Unauthorized'})
-        }
-        const {username, email, pass, role, manager} = req.body;
-        const updatedUser = await userModal.findByIdAndUpdate(req.params.userId, {username, email, pass, role, manager})
-        res.json(updatedUser)
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
 
-userRouter.delete('/:userId', auth, async(req,res)=>{
-    try {
-        if(req.user.role !== 'Manager'){
-            res.status(403).json({msg:'Unauthorized'})
-        }
-        await userModal.findByIdAndDelete(req.params.userId);
-        res.json({msg: `${userID} has been deleted`}) 
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
+        const numbers = [1, 2, 3, 4, 5];
+        console.log(calculateSum(numbers)); // output = 15
+    </script>
+</body>
+</html>
 
-module.exports = {
-    userRouter
-}
+File: problem2.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function groupedAndSortedStudents(students) {
+        const groupByGread = students.reduce((acc, student) => {
+            if(!acc[student.grade])
+            {
+                acc[student.grade] = [];
+            }
+            acc[student.grade].push(student);
+            
+            return acc;
+        },{});
+
+        Object.keys(groupByGread).forEach(grade=>{
+            groupByGread[grade] = groupByGread[grade].sort((a,b) => a.age - b.age);
+        })
+
+        return groupByGread;
+      }
+
+      const students = [
+        { name: "Alice", age: 18, gender: "Female", grade: 10 },
+        { name: "Bob", age: 17, gender: "Male", grade: 11 },
+        { name: "Charlie", age: 16, gender: "Male", grade: 10 },
+        { name: "David", age: 17, gender: "Male", grade: 9 },
+        { name: "Emma", age: 18, gender: "Female", grade: 11 },
+        { name: "Frank", age: 16, gender: "Male", grade: 9 },
+        { name: "Grace", age: 17, gender: "Female", grade: 10 },
+      ];
+
+    //   const groupedAndSortedStudents = groupAndSortStudents(students);
+      console.log(groupedAndSortedStudents(students));
+    </script>
+  </body>
+</html>
+
+
+File: problem3.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const storeData = {
+        storeName: "TechWorld",
+        location: "Metropolis",
+        products: {
+          electronicsSection: {
+            inventory: {
+              laptop: { available: 20, price: 800 },
+              smartphone: { available: 30, price: 500 },
+              tablet: { available: 15, price: 300 },
+            },
+            sales: [
+              { id: 1, items: ["laptop", "tablet"], total: 1100 },
+              { id: 2, items: ["smartphone", "tablet"], total: 800 },
+              { id: 3, items: ["laptop", "smartphone"], total: 1300 },
+            ],
+          },
+          clothingSection: {
+            inventory: {
+              shirt: { available: 50, price: 25 },
+              jeans: { available: 40, price: 40 },
+              dress: { available: 30, price: 60 },
+            },
+            sales: [
+              { id: 1, items: ["shirt", "jeans"], total: 60 },
+              { id: 2, items: ["dress", "shirt"], total: 85 },
+              { id: 3, items: ["jeans", "dress"], total: 100 },
+            ],
+          },
+        },
+        sectionNames: ["electronicsSection", "clothingSection"],
+      };
+
+      function productDetails(storeData)
+      {
+        const{
+            products:{
+                electronicsSection:{
+                    inventory:{
+                        laptop:{available: laptopAvailable, price:laptopPrice},
+                    },
+                },
+                clothingSection:{
+                    inventory:{
+                        shirt:{available:shirtAvailable, price:shirtPrice},
+                    },
+                },
+            },
+        } = storeData;
+        return{
+            laptopAvailable,
+            shirtAvailable,
+            laptopPrice,
+            shirtPrice
+        };
+      }
+
+      console.log(productDetails(storeData));
+    </script>
+  </body>
+</html>
+
+
+File: problem4.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function filterAndMapEmployees(employees)
+        {
+            const filterEmp = employees.filter(employees=>
+                employees.salary >= 50000 && 
+                employees.department === 'Engineering' &&
+                employees.age < 35
+            ) 
+
+            const mapEmp = filterEmp.map(employee =>({
+                id:employee.id,
+                name:employee.name,
+                department:employee.department
+            }))
+
+            return [...mapEmp]
+        }
+
+        const employees = [
+  { id: 1, name: 'Alice', department: 'Engineering', salary: 60000, age: 28 },
+  { id: 2, name: 'Bob', department: 'HR', salary: 45000, age: 32 },
+  { id: 3, name: 'Charlie', department: 'Engineering', salary: 55000, age: 40 }, // age is 40 taht is the reason he is not filtered 
+  { id: 4, name: 'David', department: 'Marketing', salary: 48000, age: 33 },
+  { id: 5, name: 'Emma', department: 'Engineering', salary: 70000, age: 29 },
+];
+
+console.log(filterAndMapEmployees(employees));
+
+// this is your expected output but id:3 is not younger than 35 his age is 40 
+// [  { id: 1, name: 'Alice', department: 'Engineering' },
+//   { id: 3, name: 'Charlie', department: 'Engineering' },
+//   { id: 5, name: 'Emma', department: 'Engineering' }
+// ]
+    </script>
+</body>
+</html>
+
+File: problem5.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function customSplice(arr, start, delteCount, ...eltoadd)
+        {
+            const remEl = [];
+
+            for(let i=0; i<delteCount; i++)
+            {
+                if(start < arr.length)
+                {
+                    remEl.push(arr[start]);
+                    arr.slice(start,1);
+                }
+            }
+            for(var i = eltoadd.length-1; i>= 0; i--)
+            {
+                arr.splice(start,0,eltoadd[i]);
+            }
+            return remEl;
+        }
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let remove = customSplice(arr, 3, 3, 0, 0);
+        console.log(arr);
+        console.log(remove)
+    </script>
+</body>
+</html>
+
+File: problem6.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function countFileExtensions(files) {
+        const extCount = {};
+
+        files.forEach(file =>{
+            const extension = file.split('.').pop().toLowerCase();
+
+            extCount[extension] = (extCount[extension] || 0) +1;
+        })
+        return extCount;
+      }
+
+      const files = [
+        "document1.pdf",
+        "document2.pdf",
+        "image1.png",
+        "text1.txt",
+        "photo1.jpg",
+        "program1.exe",
+        "data1.csv",
+        "report1.pdf",
+      ];
+
+      console.log(countFileExtensions(files));
+    </script>
+  </body>
+</html>
+
+
+File: problem7.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const originalData = {
+        id: 101,
+        name: "John Doe",
+        department: "Engineering",
+        address: {
+          city: "New York",
+          country: "USA",
+        },
+        salary: 50000,
+      };
+
+      const updateInfo = {
+        name: "Jane Smith",
+        address: {
+          city: "Los Angeles",
+          country: "USA",
+        },
+        salary: 60000,
+      };
+
+      function updateEmployees(originalData, updateInfo) {
+        
+      }
+      console.log(originalData,updateInfo);
+    </script>
+  </body>
+</html>
+
+
+File: problem8.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function rearrangeArray(numbers)
+        {
+            const removeNumbers = numbers.splice(0,3);
+
+            numbers.push(...removeNumbers);
+
+            return numbers;
+        }
+
+        const numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+
+        console.log(rearrangeArray(numbers));
+
+    </script>
+</body>
+</html>
 

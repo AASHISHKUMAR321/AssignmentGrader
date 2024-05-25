@@ -1,0 +1,198 @@
+Graded Assignment: {
+  grading: {
+    'File Upload': {
+      'Implement file upload using Multer': 1,
+      'Support file types: PDF, TXT, IMG (images), CSV': 1
+    },
+    Logging: {
+      'Use Morgan for HTTP request logging': 1,
+      'Implement custom logging for file upload activities': 0.5
+    },
+    'File Management': {
+      'Users can see the number of files stored in each folder': 1,
+      'Provide file details such as name, type, and upload time': 1,
+      'Handle file size limit and auto-generation of new files': 0.5
+    },
+    Bonus: {
+      'Serve an HTML page rendering a table with columns for Images, PDF, Files, CSV': 0.5,
+      'Render data accordingly': 0.5,
+      'Open selected files in a new window': 0
+    },
+    'Good Practices': {
+      'Follow MVC structure': 0.1,
+      'Ensure good code quality': 0.1,
+      'Use proper naming conventions for functions, API, variables, etc.': 0.1,
+      'Add comments where necessary': 0.1,
+      'Ensure all responses are in JSON format, even errors; keep track of status codes': 0.1,
+      'Use environment variables to protect sensitive information': 0,
+      'Commit your code during the evaluation every 15 minutes or after completing a small functionality; use meaningful commit messages': 0.25
+    }
+  },
+  total_score: 7.85,
+  feedback: {
+    'File Upload': {
+      'Implement file upload using Multer': 'Good job implementing file upload using Multer.',
+      'Support file types: PDF, TXT, IMG (images), CSV': 'All required file types are supported.'
+    },
+    Logging: {
+      'Use Morgan for HTTP request logging': 'Morgan is correctly used for HTTP request logging.',
+      'Implement custom logging for file upload activities': "Custom logging is implemented, but there is a minor issue with the log file path in the logSuccess function. The path should be '../logs/success.txt' instead of '../logs/sucess.txt'."
+    },
+    'File Management': {
+      'Users can see the number of files stored in each folder': 'Users can see the number of files stored in each folder.',
+      'Provide file details such as name, type, and upload time': 'File details are correctly provided.',
+      'Handle file size limit and auto-generation of new files': 'File size limit is handled, but the auto-generation of new files is not fully implemented. The log file should be split when it exceeds 1KB.'
+    },
+    Bonus: {
+      'Serve an HTML page rendering a table with columns for Images, PDF, Files, CSV': "HTML page is served, but the table rendering is not fully correct. The container element with id 'file-details' is missing in the HTML.",
+      'Render data accordingly': 'Data is rendered accordingly in the table.',
+      'Open selected files in a new window': 'Functionality to open selected files in a new window is missing.'
+    },
+    'Good Practices': {
+      'Follow MVC structure': 'The code structure is somewhat following MVC, but it can be improved.',
+      'Ensure good code quality': 'Code quality is good, but there are some minor issues.',
+      'Use proper naming conventions for functions, API, variables, etc.': 'Naming conventions are followed.',
+      'Add comments where necessary': 'Comments are added, but more detailed comments would be helpful.',
+      'Ensure all responses are in JSON format, even errors; keep track of status codes': 'Responses are in JSON format, and status codes are tracked.',
+      'Use environment variables to protect sensitive information': 'Environment variables are not used to protect sensitive information.',
+      'Commit your code during the evaluation every 15 minutes or after completing a small functionality; use meaningful commit messages': 'Commit messages are meaningful, but there is no evidence of frequent commits.'
+    }
+  },
+  generative_ai_flag: false
+}
+                                                                                                                           
+┌──(aashish㉿kali)-[~/Desktop/AssigmentGrader]
+└─$ node src/gpt/gpt.js
+Graded Assignment: {
+  grading: {
+    'File Upload': {
+      'Implement file upload using Multer': 1,
+      'Support file types: PDF, TXT, IMG (images), CSV': 1,
+      feedback: 'File upload is implemented using Multer and supports the required file types. Good job!'
+    },
+    Logging: {
+      'Use Morgan for HTTP request logging': 1,
+      'Implement custom logging for file upload activities': 0.5,
+      feedback: "Morgan is used for HTTP request logging. Custom logging is implemented but there is a minor issue with the log file path in the logSuccess function (typo in 'success.txt')."
+    },
+    'File Management': {
+      'Users can see the number of files stored in each folder': 1,
+      'Provide file details such as name, type, and upload time': 1,
+      'Handle file size limit and auto-generation of new files': 0.5,
+      feedback: 'File details are provided correctly. However, the file size limit is set to 1MB instead of 1KB, and the auto-generation of new files is not fully implemented.'
+    },
+    Bonus: {
+      'Serve an HTML page rendering a table with columns for Images, PDF, Files, CSV': 0.5,
+      'Render data accordingly': 0.5,
+      'Open selected files in a new window': 0,
+      feedback: 'HTML page is served and data is rendered in a table. However, the functionality to open selected files in a new window is missing.'
+    },
+    'Good Practices': {
+      'Follow MVC structure': 0.15,
+      'Ensure good code quality': 0.15,
+      'Use proper naming conventions for functions, API, variables, etc.': 0.15,
+      'Add comments where necessary': 0.15,
+      'Ensure all responses are in JSON format, even errors; keep track of status codes': 0.15,
+      'Use environment variables to protect sensitive information': 0,
+      'Commit your code during the evaluation every 15 minutes or after completing a small functionality; use meaningful commit messages': 0,
+      feedback: 'Good code quality and naming conventions. Comments are added where necessary. Responses are in JSON format. Environment variables and commit practices need improvement.'
+    }
+  },
+  total_score: 7,
+  ai_generated_flag: false
+}
+                                                                                                                           
+┌──(aashish㉿kali)-[~/Desktop/AssigmentGrader]
+└─$ node src/gpt/gpt.js
+Graded Assignment: {
+  result: {
+    'File Upload': {
+      score: 1.5,
+      feedback: 'Multer is correctly implemented for file upload, but the system does not handle all specified file types (missing general image type handling, only specific formats are included).'
+    },
+    Logging: {
+      score: 1.5,
+      feedback: 'Morgan is used for HTTP request logging, and custom logging for file upload activities is implemented. However, the error handling could be more descriptive, and the log file size management is not fully robust.'
+    },
+    'File Management': {
+      score: 2.5,
+      feedback: 'The system correctly displays the number of files and their details. However, the auto-generation of new files when the size limit is exceeded is not clearly implemented for all log files.'
+    },
+    Bonus: {
+      score: 1.5,
+      feedback: 'The HTML page serves a table with file details, but there is no functionality to open selected files in a new window. The data rendering is partially implemented.'
+    },
+    'Good Practices': {
+      score: 0.75,
+      feedback: 'The code follows a basic MVC structure and has some comments. However, improvements are needed in variable naming conventions, error response formats, and the use of environment variables for sensitive information. Commit frequency and message quality are not verifiable from the submission.'
+    },
+    'Total Score': 7.75,
+    'Generative AI Detection': false
+  }
+}
+                                                                                                                           
+┌──(aashish㉿kali)-[~/Desktop/AssigmentGrader]
+└─$ node src/gpt/gpt.js
+Graded Assignment: {
+  grading: {
+    'File Upload': {
+      'Implement file upload using Multer': 1,
+      'Support file types: PDF, TXT, IMG (images), CSV': 1
+    },
+    Logging: {
+      'Use Morgan for HTTP request logging': 1,
+      'Implement custom logging for file upload activities': 0.5
+    },
+    'File Management': {
+      'Users can see the number of files stored in each folder': 0.5,
+      'Provide file details such as name, type, and upload time': 1,
+      'Handle file size limit and auto-generation of new files': 0.5
+    },
+    Bonus: {
+      'Serve an HTML page rendering a table with columns for Images, PDF, Files, CSV': 0.5,
+      'Render data accordingly': 0.5,
+      'Open selected files in a new window': 0
+    },
+    'Good Practices': {
+      'Follow MVC structure': 0.1,
+      'Ensure good code quality': 0.1,
+      'Use proper naming conventions for functions, API, variables, etc.': 0.1,
+      'Add comments where necessary': 0.1,
+      'Ensure all responses are in JSON format, even errors; keep track of status codes': 0.1,
+      'Use environment variables to protect sensitive information': 0,
+      'Commit your code during the evaluation every 15 minutes or after completing a small functionality; use meaningful commit messages': 0
+    }
+  },
+  total_score: 7.1,
+  feedback: {
+    'File Upload': {
+      'Implement file upload using Multer': 'Good job implementing file upload using Multer.',
+      'Support file types: PDF, TXT, IMG (images), CSV': 'Supported file types are correctly implemented.'
+    },
+    Logging: {
+      'Use Morgan for HTTP request logging': 'Morgan is correctly used for HTTP request logging.',
+      'Implement custom logging for file upload activities': 'Custom logging is implemented, but there is a minor issue with the log file path and message formatting.'
+    },
+    'File Management': {
+      'Users can see the number of files stored in each folder': 'File details are provided, but the number of files in each folder is not explicitly shown.',
+      'Provide file details such as name, type, and upload time': 'File details are correctly provided.',
+      'Handle file size limit and auto-generation of new files': 'File size limit is handled, but auto-generation of new files is not fully implemented.'
+    },
+    Bonus: {
+      'Serve an HTML page rendering a table with columns for Images, PDF, Files, CSV': 'HTML page is served, but the table rendering is not fully functional.',
+      'Render data accordingly': 'Data rendering is partially implemented.',
+      'Open selected files in a new window': 'This functionality is not implemented.'
+    },
+    'Good Practices': {
+      'Follow MVC structure': 'MVC structure is partially followed.',
+      'Ensure good code quality': 'Code quality is generally good, but there are areas for improvement.',
+      'Use proper naming conventions for functions, API, variables, etc.': 'Naming conventions are mostly followed.',
+      'Add comments where necessary': 'Comments are present but could be more detailed.',
+      'Ensure all responses are in JSON format, even errors; keep track of status codes': 'Responses are in JSON format, but error handling could be improved.',
+      'Use environment variables to protect sensitive information': 'Environment variables are not used.',
+      'Commit your code during the evaluation every 15 minutes or after completing a small functionality; use meaningful commit messages': 'No evidence of regular commits with meaningful messages.'
+    }
+  },
+  generative_ai_flag: false
+}
+     

@@ -8,8 +8,9 @@ const gradingPrompt = `
   "role": "${role}"
   "problem_statement": "${problemStatement}",
   "learning_objectives": "${learningObjectives}",
-  "solution":"${solution}"
-  "format": "You have to give the result in the form of JSON and give me total score as well & min-1 and max-10 marks & must check if this code is written using the genrative ai make flag  true if you found."
+  "format": "You have to give the result in the form of JSON and give me total score based on the LO's i am giving you &  must check if this code is written using the genrative ai make flag  true if you found.
+  
+  "
 }
 `;
 
