@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "type":"module",
+  "type": "module",
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.15",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
+    "json2csv": "^6.0.0-alpha.2",
     "openai": "^4.47.1"
   }
 }

@@ -2,6 +2,7 @@ import axios from "axios";
 import path from "path";
 import fs from "fs/promises"; // Using fs.promises for asynchronous file operations
 import { config } from "dotenv";
+import githubUrls from "./submission.js";
 config();
 
 // Function to check if a file is binary based on its extension
@@ -53,7 +54,7 @@ async function fetchDataFromGitHub(
       });
 
       for (const item of response.data) {
-        if (item.type === "dir") {
+        if (item.type === "dir" &&  item.name!="node_modules") {
           // Add folder to output content
           outputContent += `${indent}Folder: ${path.relative(
             currentPath,
@@ -62,7 +63,12 @@ async function fetchDataFromGitHub(
           // Recursively traverse subdirectory
           await traverseDirectory(item.path, token, `${indent}  `);
         } else {
-          if (isBinaryFile(item.name) || item.name=="package-lock.json") {
+          if (
+            isBinaryFile(item.name) ||
+            item.name == "package-lock.json" ||
+            item.name == "yarn.lock"
+           
+          ) {
             console.log(`Skipping binary file: ${item.name}`);
             continue;
           }
@@ -95,8 +101,7 @@ async function fetchDataFromGitHub(
 process.stdin.setEncoding("utf8");
 
 console.log("Enter the GitHub repository URL: ");
-
-process.stdin.on("data", function (data) {
+githubUrls.map(function (data) {
   console.log("You entered: " + data.trim());
 
   const githubUrl = data.trim();
@@ -117,15 +122,14 @@ process.stdin.on("data", function (data) {
   let subdirectory = urlParts.slice(treeIndex + 2).join("/");
 
   // Optional: Exit the process after receiving input
-  const outputFile = "compiled_data.txt"; // Output file to save the aggregated content
+  const outputFilePath = `submissions/b36_c2/nem/${repository}.txt`; // Output file to save the aggregated content
 
   // Call the function to fetch data from GitHub repository
   const owner = "masai-course"; // Owner of the repository
   const token = process.env.TOKEN; // Replace with your GitHub personal access token
-  fetchDataFromGitHub(owner, repository, subdirectory, token, outputFile).then(
+  fetchDataFromGitHub(owner, repository, subdirectory, token, outputFilePath).then(
     () => {
       console.log("Data is added successfully to output folder");
-      process.stdin.pause(); // End the process.stdin stream
     }
   );
 });
